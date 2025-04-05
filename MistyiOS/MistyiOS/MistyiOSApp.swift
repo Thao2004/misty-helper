@@ -11,7 +11,9 @@ import SwiftUI
 struct MistyiOSApp: App {
     var body: some Scene {
         WindowGroup {
-            HomeDashboardView()
+            NavigationStack {
+                WelcomeScreenView()
+            }
         }
     }
 }

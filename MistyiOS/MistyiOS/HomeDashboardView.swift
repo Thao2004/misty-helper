@@ -42,12 +42,6 @@ struct HomeDashboardView: View {
                         DashboardButton(title: "Connect to Misty", imageName: "hare")
                             .frame(maxWidth: .infinity)
                     }
-
-                    // Connect to Apple Watch
-                    NavigationLink(destination: ConnectToAppleWatchView()) {
-                        DashboardButton(title: "Connect to Apple Watch", imageName: "applewatch")
-                            .frame(maxWidth: .infinity)
-                    }
                 }
 
                 // Actions - Set medication & To do list horizontally aligned
@@ -125,36 +119,6 @@ struct DashboardButton: View {
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(12)
-    }
-}
-
-// A view to simulate the Apple Watch connection
-struct ConnectToAppleWatchView: View {
-    var body: some View {
-        VStack {
-            Text("Connect to Apple Watch")
-                .font(.largeTitle)
-                .padding()
-
-            Text("Make sure your Apple Watch is turned on and in range.")
-                .font(.body)
-                .padding()
-
-            // Simulate connecting button or instructions here
-            Button(action: {
-                // Add Apple Watch connection logic here
-                print("Connecting to Apple Watch...")
-            }) {
-                Text("Connect")
-                    .font(.title)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
-        }
-        .navigationBarTitle("Apple Watch", displayMode: .inline)
-        .padding()
     }
 }
 
