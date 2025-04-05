@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Misty Telepresence</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        video {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 4px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f8f8f8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Misty Telepresence</h1>
+        <div class="video-container">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <video id="localVideo" autoplay playsinline muted></video>
+        </div>
+        <div class="controls">
+            <button id="startButton">Start Call</button>
+            <button id="endButton" disabled>End Call</button>
+        </div>
+        <div class="status" id="status">Ready to connect</div>
+    </div>
+
+    <script>
+        const signalingServer = 'ws://localhost:8765/misty';
+        let peerConnection;
+        let localStream;
+        let remoteStream;
+
+        const startButton = document.getElementById('startButton');
+        const endButton = document.getElementById('endButton');
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const status = document.getElementById('status');
+
+        // WebSocket connection
+        let ws = new WebSocket(signalingServer);
+
+        ws.onopen = () => {
+            status.textContent = 'Connected to signaling server';
+        };
+
+        ws.onclose = () => {
+            status.textContent = 'Disconnected from signaling server';
+        };
+
+        ws.onmessage = async (event) => {
+            const message = JSON.parse(event.data);
+            
+            if (message.type === 'offer') {
+                await handleOffer(message);
+            } else if (message.type === 'answer') {
+                await handleAnswer(message);
+            } else if (message.type === 'candidate') {
+                await handleCandidate(message);
+            }
+        };
+
+        async function startCall() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localVideo.srcObject = localStream;
+
+                peerConnection = new RTCPeerConnection({
+                    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+                });
+
+                // Add local stream to peer connection
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+
+                // Handle remote stream
+                peerConnection.ontrack = (event) => {
+                    remoteStream = event.streams[0];
+                    remoteVideo.srcObject = remoteStream;
+                };
+
+                // Handle ICE candidates
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        ws.send(JSON.stringify({
+                            type: 'candidate',
+                            candidate: event.candidate
+                        }));
+                    }
+                };
+
+                // Create and send offer
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                ws.send(JSON.stringify({
+                    type: 'offer',
+                    sdp: offer.sdp
+                }));
+
+                startButton.disabled = true;
+                endButton.disabled = false;
+                status.textContent = 'Call in progress';
+            } catch (error) {
+                console.error('Error starting call:', error);
+                status.textContent = 'Error starting call: ' + error.message;
+            }
+        }
+
+        async function endCall() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            if (remoteStream) {
+                remoteStream.getTracks().forEach(track => track.stop());
+                remoteStream = null;
+            }
+            localVideo.srcObject = null;
+            remoteVideo.srcObject = null;
+            startButton.disabled = false;
+            endButton.disabled = true;
+            status.textContent = 'Call ended';
+        }
+
+        async function handleOffer(offer) {
+            if (!peerConnection) {
+                await startCall();
+            }
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            ws.send(JSON.stringify({
+                type: 'answer',
+                sdp: answer.sdp
+            }));
+        }
+
+        async function handleAnswer(answer) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        }
+
+        async function handleCandidate(candidate) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        }
+
+        startButton.addEventListener('click', startCall);
+        endButton.addEventListener('click', endCall);
+    </script>
+</body>
+</html> 
