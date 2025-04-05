@@ -9,43 +9,42 @@ import SwiftUI
 
 struct WelcomeScreenView: View {
     var body: some View {
-        NavigationView {
-            VStack(spacing: 40) {
-                Text("Misty Care")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.top, 60)
-
-                Image(systemName: "paperplane.fill") // Replace with the app logo
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
+        VStack(spacing: 40) {
+            Text("Misty Care")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding(.top, 60)
+            
+            Image(systemName: "paperplane.fill") // Replace with the app logo
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+                .foregroundColor(.blue)
+                .padding()
+            
+            NavigationLink(destination: LoginView()) {
+                Text("Sign In")
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .cornerRadius(8)
+            }
+            
+            NavigationLink(destination: RoleSelectionView()) {
+                Text("Sign Up")
                     .foregroundColor(.blue)
                     .padding()
-
-                NavigationLink(destination: LoginView()) {
-                    Text("Sign In")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .cornerRadius(8)
-                }
-
-                NavigationLink(destination: SignUpView()) {
-                    Text("Sign Up")
-                        .foregroundColor(.blue)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.white)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue))
-                }
-
-                Spacer()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white)
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue))
             }
-            .padding()
+            
+            Spacer()
         }
+        .padding()
     }
+    
 }
 
 #Preview {

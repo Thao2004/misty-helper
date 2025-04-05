@@ -6,20 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		48BF951D2DA1849100583004 /* MistyWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 48BF95102DA1849000583004 /* MistyWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-/* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		48BF951B2DA1849100583004 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 48BF94D82DA1837E00583004 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 48BF950F2DA1849000583004;
-			remoteInfo = "MistyWatch Watch App";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		48BF95212DA1849100583004 /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -27,7 +13,6 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				48BF951D2DA1849100583004 /* MistyWatch Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -36,7 +21,6 @@
 
 /* Begin PBXFileReference section */
 		48BF94E02DA1837E00583004 /* MistyiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MistyiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		48BF95102DA1849000583004 /* MistyWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MistyWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -45,22 +29,10 @@
 			path = MistyiOS;
 			sourceTree = "<group>";
 		};
-		48BF95112DA1849000583004 /* MistyWatch Watch App */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "MistyWatch Watch App";
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		48BF94DD2DA1837E00583004 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		48BF950D2DA1849000583004 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -74,7 +46,6 @@
 			isa = PBXGroup;
 			children = (
 				48BF94E22DA1837E00583004 /* MistyiOS */,
-				48BF95112DA1849000583004 /* MistyWatch Watch App */,
 				48BF94E12DA1837E00583004 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -83,7 +54,6 @@
 			isa = PBXGroup;
 			children = (
 				48BF94E02DA1837E00583004 /* MistyiOS.app */,
-				48BF95102DA1849000583004 /* MistyWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -103,7 +73,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				48BF951C2DA1849100583004 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				48BF94E22DA1837E00583004 /* MistyiOS */,
@@ -113,28 +82,6 @@
 			);
 			productName = MistyiOS;
 			productReference = 48BF94E02DA1837E00583004 /* MistyiOS.app */;
-			productType = "com.apple.product-type.application";
-		};
-		48BF950F2DA1849000583004 /* MistyWatch Watch App */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 48BF951E2DA1849100583004 /* Build configuration list for PBXNativeTarget "MistyWatch Watch App" */;
-			buildPhases = (
-				48BF950C2DA1849000583004 /* Sources */,
-				48BF950D2DA1849000583004 /* Frameworks */,
-				48BF950E2DA1849000583004 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				48BF95112DA1849000583004 /* MistyWatch Watch App */,
-			);
-			name = "MistyWatch Watch App";
-			packageProductDependencies = (
-			);
-			productName = "MistyWatch Watch App";
-			productReference = 48BF95102DA1849000583004 /* MistyWatch Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -148,9 +95,6 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					48BF94DF2DA1837E00583004 = {
-						CreatedOnToolsVersion = 16.0;
-					};
-					48BF950F2DA1849000583004 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
@@ -170,20 +114,12 @@
 			projectRoot = "";
 			targets = (
 				48BF94DF2DA1837E00583004 /* MistyiOS */,
-				48BF950F2DA1849000583004 /* MistyWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		48BF94DE2DA1837E00583004 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		48BF950E2DA1849000583004 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -200,22 +136,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		48BF950C2DA1849000583004 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		48BF951C2DA1849100583004 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 48BF950F2DA1849000583004 /* MistyWatch Watch App */;
-			targetProxy = 48BF951B2DA1849100583004 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		48BF94EC2DA1837F00583004 /* Debug */ = {
@@ -395,66 +316,6 @@
 			};
 			name = Release;
 		};
-		48BF951F2DA1849100583004 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MistyWatch Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = 6996P95SNF;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = MistyWatch;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ThaoNguyen.MistyiOS;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ThaoNguyen.MistyiOS.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
-			};
-			name = Debug;
-		};
-		48BF95202DA1849100583004 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MistyWatch Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = 6996P95SNF;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = MistyWatch;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ThaoNguyen.MistyiOS;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ThaoNguyen.MistyiOS.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 11.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -472,15 +333,6 @@
 			buildConfigurations = (
 				48BF94EF2DA1837F00583004 /* Debug */,
 				48BF94F02DA1837F00583004 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		48BF951E2DA1849100583004 /* Build configuration list for PBXNativeTarget "MistyWatch Watch App" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				48BF951F2DA1849100583004 /* Debug */,
-				48BF95202DA1849100583004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
