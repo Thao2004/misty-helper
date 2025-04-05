@@ -12,7 +12,7 @@ struct MistyiOSApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                WelcomeScreenView()
+                SplashScreenView()
             }
         }
     }
