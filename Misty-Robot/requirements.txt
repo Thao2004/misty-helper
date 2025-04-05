@@ -58,3 +58,7 @@ urllib3==1.26.18
 wcwidth==0.2.13
 websocket-client==0.57.0
 yapf==0.30.0
+aiortc==1.5.0
+av==10.0.0
+websockets==12.0
+opencv-python==4.8.1.78

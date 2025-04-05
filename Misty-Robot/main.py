@@ -56,18 +56,6 @@ def face_detected():
     misty.stop_face_detection()  # Stop face recognition
     return "Face detected"
 
-def load_instructions(person: int):
-    global system
-    with open("main_instruction.txt", 'r') as file:
-        system = file.read()
-    if person == 1:
-        with open("./prompt_1st_voice.txt", 'r') as file:
-            system += file.read()
-    elif person == 3:
-        with open("./prompt_3rd_voice.txt", 'r') as file:
-            system += file.read()
-    print("Instructions loaded: ", system)
-
 #Call back function for when Misty captures speech
 def speech_captured(data):
     if data["message"]["step"] == "CompletedASR":
@@ -264,7 +252,6 @@ if __name__ == "__main__":
         if misty.get_known_faces() is not None:
             face_detected()
     print("Face detected")
-    load_instructions(3)
     misty.display_image("e_Joy.jpg")
     misty.register_event(event_name="arbitrary-name",
                      event_type=Events.DialogAction,

@@ -13,10 +13,6 @@ from helper.general_helper import transcribe_audio_file, transcribe_streaming
 
 # Imports the Google Cloud client library
 
-
-
-
-
 #API ENDPOINT
 url = "https://chatgpt-api7.p.rapidapi.com/ask"
 #TO DO: Misty look around to detect face
