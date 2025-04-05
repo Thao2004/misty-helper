@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Caregiver, Patient, HealthInfo
+from .models import Caregiver, Patient, HealthInfo, Checkup, CheckupResponse
 
 # Serializer for Django's built-in User model.
 class UserSerializer(serializers.ModelSerializer):
@@ -90,3 +90,42 @@ class HealthInfoSerializer(serializers.ModelSerializer):
         instance.blood_type = validated_data.get('blood_type', instance.blood_type)
         instance.save()
         return instance
+
+class CheckupSerializer(serializers.ModelSerializer):
+    caregiver = serializers.PrimaryKeyRelatedField(read_only=True)
+    patient = serializers.PrimaryKeyRelatedField(read_only=True)
+    
+    class Meta:
+        model = Checkup
+        fields = [
+            'id',
+            'caregiver',
+            'patient',
+            'checkup_time_start',
+            'checkup_time_end',
+            'selected_time',
+            'questions',
+            'measure_temperature',
+            'status',
+            'created_at',
+        ]
+        read_only_fields = ['status', 'created_at']
+
+    def create(self, validated_data):
+        # The caregiver and patient should be set from the view context
+        return Checkup.objects.create(**validated_data)
+
+class CheckupResponseSerializer(serializers.ModelSerializer):
+    checkup = serializers.PrimaryKeyRelatedField(queryset=Checkup.objects.all())
+    
+    class Meta:
+        model = CheckupResponse
+        fields = [
+            'id',
+            'checkup',
+            'responses',
+            'temperature',
+            'responded_at',
+            'openai_summary'
+        ]
+        read_only_fields = ['responded_at', 'openai_summary']
