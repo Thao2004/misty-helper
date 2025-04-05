@@ -76,7 +76,6 @@ struct CaregiverSignUpView: View {
             return
         }
 
-        // Example POST payload
         let payload: [String: Any] = [
             "username": username,
             "first_name": firstName,
@@ -87,9 +86,48 @@ struct CaregiverSignUpView: View {
             "date_of_birth": formattedBirthDate
         ]
 
-        alertMessage = "Caregiver registered successfully!\n\(payload)"
-        showAlert = true
+        guard let url = URL(string: "http://10.226.105.114:8000/register/caregiver/") else {
+            alertMessage = "Invalid URL."
+            showAlert = true
+            return
+        }
 
-        // TODO: Connect to Django API endpoint here
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: payload, options: [])
+        } catch {
+            alertMessage = "Failed to encode data."
+            showAlert = true
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    alertMessage = "Error: \(error.localizedDescription)"
+                    showAlert = true
+                    return
+                }
+
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode == 201 {
+                        alertMessage = "Caregiver registered successfully!"
+                    } else {
+                        // Try to decode error message from response
+                        if let data = data,
+                           let errorMessage = String(data: data, encoding: .utf8) {
+                            alertMessage = "Failed: \(errorMessage)"
+                        } else {
+                            alertMessage = "Registration failed with status code \(httpResponse.statusCode)"
+                        }
+                    }
+                    showAlert = true
+                }
+            }
+        }.resume()
     }
+
 }

@@ -24,7 +24,7 @@ struct LoginView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 
-                TextField("Email", text: $viewModel.email)
+                TextField("Username", text: $viewModel.username)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .textFieldStyle(RoundedBorderTextFieldStyle())

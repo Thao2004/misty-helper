@@ -21,23 +21,28 @@ struct SplashScreenView: View {
                 Spacer()
                 
                 Text(visibleText)
-                    .font(.custom("Snell Roundhand", size: 70))
-                    .foregroundColor(.blue)
+                    .font(.custom("Georgia", size: 60))
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
                     .padding()
                     .onAppear {
                         typeText()
                     }
 
-                Image(systemName: "paperplane.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 80, height: 80)
-                    .foregroundColor(.blue)
-                
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.white)
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.27, green: 0.51, blue: 0.79),
+                        Color(red: 0.42, green: 0.74, blue: 0.96)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+            )
         }
     }
 
@@ -60,7 +65,6 @@ struct SplashScreenView: View {
         }
     }
 }
-
 
 
 #Preview {
