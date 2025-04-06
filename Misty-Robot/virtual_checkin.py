@@ -84,6 +84,7 @@ from helper.tts_helper import text_to_speech
 
 from config import MISTY_IP, BACKEND_URL, CHECKUP_POLL_INTERVAL
 
+responses = {}
 class VirtualCheckIn:
     def __init__(self, misty: Robot, backend_url: str):
         self.misty = misty
@@ -129,7 +130,7 @@ class VirtualCheckIn:
             # Parse new time and update if valid
             try:
                 response = requests.post(
-                    f"{self.backend_url}/api/checkup/select-time/",
+                    f"{self.backend_url}/checkup/select-time/",
                     json={
                         "checkup_id": checkup_id,
                         "selected_time": new_time
@@ -145,13 +146,7 @@ class VirtualCheckIn:
 
     async def _conduct_checkup(self, checkup_id: str):
         """Conduct the actual checkup process"""
-        try:
-            # Get checkup details
-            response = requests.get(f"{self.backend_url}/api/checkup/{checkup_id}/")
-            if response.status_code != 200:
-                self.speak("I'm sorry, I couldn't retrieve your checkup details.")
-                return
-            
+        try:            
             checkup = response.json()
             questions = json.loads(checkup['questions'])
             responses = {}
@@ -191,7 +186,7 @@ class VirtualCheckIn:
             }
 
             submit_response = requests.post(
-                f"{self.backend_url}/api/checkup/response/",
+                f"{self.backend_url}/checkup/response/",
                 json=response_data
             )
 
@@ -310,7 +305,7 @@ async def run_checkup_process(checkin: VirtualCheckIn):
             if due_checkups:
                 print(f"Found {len(due_checkups)} due checkups")
                 for checkup in due_checkups:
-                    print(f"Processing checkup for patient {checkup.get('patient_name', 'Unknown')}")
+                    print(f"Processing checkup for patient")
                     await checkin.start_checkup(checkup['id'])
             else:
                 print("No checkups due at this time")
