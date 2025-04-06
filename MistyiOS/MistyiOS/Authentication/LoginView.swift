@@ -124,7 +124,7 @@ struct LoginView: View {
                 }
 
                 // Navigate to Home
-                NavigationLink(destination: HomeDashboardView(), isActive: $isDashboardPresented) {
+                NavigationLink(destination: PatientDashboardView(), isActive: $isDashboardPresented) {
                     EmptyView()
                 }
 
