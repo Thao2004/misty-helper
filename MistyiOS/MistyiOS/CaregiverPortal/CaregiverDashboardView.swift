@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct CaregiverDashboardView: View {
-    init() {
-        // Customize tab bar appearance globally
+    @StateObject private var viewModel = CaregiverViewModel()
+    let userId: Int
+
+    init(userId: Int) {
+        self.userId = userId
+
+        // Tab bar appearance
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
         tabBarAppearance.backgroundColor = UIColor.clear
-        
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
     }
@@ -22,7 +26,6 @@ struct CaregiverDashboardView: View {
         TabView {
             NavigationStack {
                 ZStack {
-                    // Background Gradient
                     LinearGradient(
                         gradient: Gradient(colors: [
                             Color(red: 0.27, green: 0.51, blue: 0.79),
@@ -33,9 +36,8 @@ struct CaregiverDashboardView: View {
                     )
                     .ignoresSafeArea()
 
-                    // Radial glow center
                     RadialGradient(
-                        gradient: Gradient(colors: [Color.white.opacity(0.25), Color.clear]),
+                        gradient: Gradient(colors: [Color.white.opacity(0.25), .clear]),
                         center: .center,
                         startRadius: 5,
                         endRadius: 300
@@ -43,22 +45,19 @@ struct CaregiverDashboardView: View {
                     .ignoresSafeArea()
 
                     VStack(alignment: .leading, spacing: 30) {
-                        // Welcome Header
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Welcome Back!")
                                 .font(.system(size: 36, weight: .bold))
                                 .foregroundColor(.white)
 
-                            Text("Jonathan Patterson")
+                            Text(viewModel.fullName.isEmpty ? "Loading..." : viewModel.fullName)
                                 .font(.system(size: 18))
                                 .foregroundColor(.white.opacity(0.8))
                         }
                         .padding(.horizontal)
-                        .padding(.top, 40) // Moved up slightly
+                        .padding(.top, 40)
                         
-                        
-                        // Patient List Button
-                        NavigationLink(destination: PatientListView()) {
+                        NavigationLink(destination: PatientListView(caregiverId: userId)) {
                             CaregiverDashboardButton(title: "Patient List", imageName: "person.3.fill")
                                 .padding(.horizontal)
                         }
@@ -67,21 +66,24 @@ struct CaregiverDashboardView: View {
                         Spacer()
                     }
                 }
+                .onAppear {
+                    viewModel.fetchCaregiverInfo(userId: userId)
+                }
             }
             .tabItem {
                 Label("Home", systemImage: "house.fill")
-                    .foregroundColor(.white)
             }
 
-            CaregiverProfileView()
+            CaregiverProfileView(userId: userId)
                 .tabItem {
                     Label("Profile", systemImage: "person.fill")
-                        .foregroundColor(.white)
                 }
         }
-        .accentColor(.white) // Ensures white icon + label in tab bar
+        .tabViewStyle(DefaultTabViewStyle())
+        .accentColor(.white)
     }
 }
+
 
 // MARK: - Dashboard Button
 struct CaregiverDashboardButton: View {
@@ -108,7 +110,7 @@ struct CaregiverDashboardButton: View {
     }
 }
 
-#Preview {
-    CaregiverDashboardView()
-}
 
+#Preview {
+    CaregiverDashboardView(userId: 1)
+}

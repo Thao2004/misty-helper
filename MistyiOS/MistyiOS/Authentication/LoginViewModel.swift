@@ -11,14 +11,16 @@ import SwiftUI
 class LoginViewModel: ObservableObject {
     @Published var username: String = ""
     @Published var password: String = ""
+    @Published var role: String = ""
+    @Published var userId: Int? = nil
 
     func login(completion: @escaping (Bool, String) -> Void) {
         guard !username.isEmpty, !password.isEmpty else {
-            completion(false, "Please enter both email and password.")
+            completion(false, "Please enter both username and password.")
             return
         }
 
-        guard let url = URL(string: "http://10.226.173.27:8000/login/") else {
+        guard let url = URL(string: "http://10.226.162.163:8000/login/") else {
             completion(false, "Invalid server URL.")
             return
         }
@@ -33,7 +35,7 @@ class LoginViewModel: ObservableObject {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: payload, options: [])
+            request.httpBody = try JSONSerialization.data(withJSONObject: payload)
         } catch {
             completion(false, "Failed to encode login data.")
             return
@@ -46,23 +48,34 @@ class LoginViewModel: ObservableObject {
                     return
                 }
 
-                if let httpResponse = response as? HTTPURLResponse {
-                    if httpResponse.statusCode == 200 {
-                        completion(true, "Login successful!")
-                    } else {
-                        if let data = data,
-                           let errorMessage = String(data: data, encoding: .utf8) {
-                            completion(false, errorMessage)
+                guard let httpResponse = response as? HTTPURLResponse,
+                      let data = data else {
+                    completion(false, "Unexpected server response.")
+                    return
+                }
+
+                if httpResponse.statusCode == 200 {
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                           let role = json["role"] as? String,
+                           let userId = json["user_id"] as? Int {
+                            self.role = role
+                            self.userId = userId
+                            completion(true, "Login successful!")
                         } else {
-                            completion(false, "Login failed with status code \(httpResponse.statusCode).")
+                            completion(false, "Failed to parse login response.")
                         }
+                    } catch {
+                        completion(false, "Decoding error: \(error.localizedDescription)")
                     }
                 } else {
-                    completion(false, "Unexpected response.")
+                    let message = String(data: data, encoding: .utf8) ?? "Login failed with status code \(httpResponse.statusCode)"
+                    completion(false, message)
                 }
             }
         }.resume()
     }
 }
+
 
 
