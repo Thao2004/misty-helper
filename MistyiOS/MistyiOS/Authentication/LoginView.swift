@@ -9,12 +9,14 @@ import SwiftUI
 
 struct LoginView: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     @StateObject private var viewModel = LoginViewModel()
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var isDashboardPresented = false
     @State private var goToSignUp = false
+
+    @State private var isCaregiverDashboardPresented = false
+    @State private var isPatientDashboardPresented = false
 
     var body: some View {
         NavigationStack {
@@ -53,7 +55,7 @@ struct LoginView: View {
                         Text("Login")
                             .font(.system(size: 70, weight: .bold))
                             .foregroundColor(.white)
-                        
+
                         Text("Sign in to Misty")
                             .font(.system(size: 20))
                             .foregroundColor(.white.opacity(0.8))
@@ -82,7 +84,15 @@ struct LoginView: View {
                     Button(action: {
                         viewModel.login { success, message in
                             if success {
-                                isDashboardPresented = true
+                                switch viewModel.role {
+                                case "Caregiver":
+                                    isCaregiverDashboardPresented = true
+                                case "Patient":
+                                    isPatientDashboardPresented = true
+                                default:
+                                    alertMessage = "Unknown user role."
+                                    showAlert = true
+                                }
                             } else {
                                 alertMessage = message
                                 showAlert = true
@@ -123,17 +133,32 @@ struct LoginView: View {
                     Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
                 }
 
-                // Navigate to Home
-                NavigationLink(destination: PatientDashboardView(), isActive: $isDashboardPresented) {
+                // Navigation Destinations
+                NavigationLink(
+                    destination: viewModel.userId != nil
+                        ? AnyView(CaregiverDashboardView(userId: viewModel.userId!))
+                        : AnyView(EmptyView()),
+                    isActive: $isCaregiverDashboardPresented
+                ) {
                     EmptyView()
                 }
 
-                // Navigate to Sign Up
+
+                NavigationLink(
+                    destination: viewModel.userId != nil
+                        ? AnyView(PatientDashboardView(userId: viewModel.userId!))
+                        : AnyView(EmptyView()),
+                    isActive: $isPatientDashboardPresented
+                ) {
+                    EmptyView()
+                }
+
+
                 NavigationLink(destination: RoleSelectionView(), isActive: $goToSignUp) {
                     EmptyView()
                 }
             }
-            .navigationBarBackButtonHidden(true) // Hides default back
+            .navigationBarBackButtonHidden(true)
         }
     }
 }

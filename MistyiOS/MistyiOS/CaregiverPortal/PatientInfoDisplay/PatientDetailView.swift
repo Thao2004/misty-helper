@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct PatientDetailView: View {
-    let patientName: String
+    let patient: Patient
+    let caregiverId: Int 
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -52,26 +53,26 @@ struct PatientDetailView: View {
                 .padding(.top, 10)
 
                 // Patient name
-                Text(patientName)
+                Text(patient.fullName)
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(.white)
                     .padding(.top, 20)
 
                 // Buttons
                 VStack(spacing: 16) {
-                    NavigationLink(destination: HealthInfoView(patientName: patientName)) {
+                    NavigationLink(destination: HealthInfoView(patientId: patient.id, patientName: patient.fullName)) {
                         PatientDetailButton(title: "Health Info", systemImage: "heart.text.square.fill")
                     }
                     
-                    NavigationLink(destination: Text("Checkup History for \(patientName)")) {
+                    NavigationLink(destination: CheckupHistoryView(patientName: patient.fullName, patientId: patient.id)) {
                         PatientDetailButton(title: "Checkup History", systemImage: "clock.arrow.circlepath")
                     }
-
-                    NavigationLink(destination: Text("Medication List for \(patientName)")) {
+                    
+                    NavigationLink(destination: Text("Medication List for \(patient.fullName)")) {
                         PatientDetailButton(title: "Medication List", systemImage: "pills.fill")
                     }
-
-                    NavigationLink(destination: Text("Set New Check Up for \(patientName)")) {
+                    
+                    NavigationLink(destination: NewCheckupView(caregiverId: caregiverId, patientId: patient.id)) {
                         PatientDetailButton(title: "Set New Check Up", systemImage: "calendar.badge.plus")
                     }
                 }
@@ -83,6 +84,7 @@ struct PatientDetailView: View {
         .navigationBarBackButtonHidden(true)
     }
 }
+
 
 struct PatientDetailButton: View {
     let title: String

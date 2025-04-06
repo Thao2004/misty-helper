@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct HealthInfoView: View {
+    let patientId: Int
     let patientName: String
     @Environment(\.dismiss) private var dismiss
 
-    // These will be loaded dynamically
     @State private var height: Double?
     @State private var weight: Double?
     @State private var bloodType: String?
@@ -54,6 +54,7 @@ struct HealthInfoView: View {
                 .padding(.horizontal)
                 .padding(.top, 10)
 
+                // Title
                 Text(patientName)
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
@@ -91,16 +92,47 @@ struct HealthInfoView: View {
     }
 
     private func fetchHealthInfo() {
-        // Simulate API call with delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            // In real code: fetch from server based on patientName or ID
-            self.height = 165.0
-            self.weight = 60.0
-            self.bloodType = "O+"
-            self.isLoading = false
+        guard let url = URL(string: "http://10.226.162.163:8000/patients/\(patientId)/healthinfo/") else {
+            print("Invalid URL")
+            isLoading = false
+            return
         }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("API Error: \(error.localizedDescription)")
+                    isLoading = false
+                    return
+                }
+
+                guard let data = data else {
+                    print("No data received")
+                    isLoading = false
+                    return
+                }
+
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                        self.height = json["height"] as? Double
+                        self.weight = json["weight"] as? Double
+                        self.bloodType = json["blood_type"] as? String
+                    } else {
+                        print("Invalid JSON format")
+                    }
+                } catch {
+                    print("Decoding error: \(error)")
+                }
+
+                isLoading = false
+            }
+        }.resume()
     }
 }
+
 
 
 struct HealthInfoRow: View {

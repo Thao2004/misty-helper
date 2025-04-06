@@ -13,7 +13,7 @@ struct MistyiOSApp: App {
         WindowGroup {
             NavigationStack {
                 //SplashScreenView()
-                CaregiverDashboardView()
+                SplashScreenView()
             }
         }
     }

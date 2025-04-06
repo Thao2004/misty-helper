@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct CaregiverProfileView: View {
+    @StateObject private var viewModel = CaregiverViewModel()
+    let userId: Int
+
     var body: some View {
         ZStack {
             // Background Gradient
@@ -37,13 +40,15 @@ struct CaregiverProfileView: View {
                     .foregroundColor(.white)
                     .padding(.top, 40)
 
-                // Profile avatar
+                // Profile avatar with initials
                 Circle()
                     .fill(Color.white.opacity(0.2))
                     .frame(width: 90, height: 90)
-                    .overlay(Text("JP").font(.title).foregroundColor(.white))
+                    .overlay(Text(viewModel.initials)
+                        .font(.title)
+                        .foregroundColor(.white))
 
-                Text("Jonathan Patterson")
+                Text(viewModel.fullName)
                     .font(.title2)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
@@ -53,20 +58,27 @@ struct CaregiverProfileView: View {
                         Text("Email:")
                             .bold()
                             .foregroundColor(.white)
-                        Text("jonathan.p@hospital.com")
+                        Text(viewModel.email)
                             .foregroundColor(.white)
                     }
-                    .font(.body)
 
                     HStack {
                         Text("Hospital:")
                             .bold()
                             .foregroundColor(.white)
-                        Text("Central Health")
+                        Text(viewModel.hospital)
                             .foregroundColor(.white)
                     }
-                    .font(.body)
+
+                    HStack {
+                        Text("DOB:")
+                            .bold()
+                            .foregroundColor(.white)
+                        Text(viewModel.formattedDOB)
+                            .foregroundColor(.white)
+                    }
                 }
+                .font(.body)
                 .padding()
                 .background(Color.white.opacity(0.1))
                 .cornerRadius(12)
@@ -75,11 +87,10 @@ struct CaregiverProfileView: View {
             }
             .padding()
         }
+        .onAppear {
+            viewModel.fetchCaregiverInfo(userId: userId)
+        }
     }
-}
-
-#Preview {
-    CaregiverProfileView()
 }
 
 

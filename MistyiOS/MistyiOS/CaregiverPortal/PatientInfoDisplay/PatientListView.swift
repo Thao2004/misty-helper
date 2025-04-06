@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct PatientListView: View {
-    let patients = ["Sarah Johnson", "Michael Lee", "Emma Davis", "John Smith"]
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel = PatientListViewModel()
+
+    let caregiverId: Int
 
     var body: some View {
         ZStack {
@@ -24,7 +26,6 @@ struct PatientListView: View {
             )
             .ignoresSafeArea()
 
-            // Subtle center glow
             RadialGradient(
                 gradient: Gradient(colors: [Color.white.opacity(0.2), .clear]),
                 center: .center,
@@ -50,7 +51,7 @@ struct PatientListView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
-                
+
                 Text("Your Patients")
                     .font(.title)
                     .fontWeight(.bold)
@@ -60,8 +61,8 @@ struct PatientListView: View {
 
                 ScrollView {
                     VStack(spacing: 14) {
-                        ForEach(patients, id: \.self) { patient in
-                            NavigationLink(destination: PatientDetailView(patientName: patient)) {
+                        ForEach(viewModel.patients) { patient in
+                            NavigationLink(destination: PatientDetailView(patient: patient, caregiverId: caregiverId)) {
                                 HStack(spacing: 16) {
                                     Image(systemName: "person.fill")
                                         .resizable()
@@ -69,7 +70,7 @@ struct PatientListView: View {
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(.blue)
 
-                                    Text(patient)
+                                    Text(patient.fullName)
                                         .foregroundColor(.primary)
                                         .fontWeight(.semibold)
 
@@ -91,13 +92,10 @@ struct PatientListView: View {
                 Spacer()
             }
         }
+        .onAppear {
+            viewModel.fetchPatients(for: caregiverId)
+        }
         .navigationBarBackButtonHidden(true)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        PatientListView()
     }
 }
 
