@@ -18,7 +18,7 @@ class LoginViewModel: ObservableObject {
             return
         }
 
-        guard let url = URL(string: "http://10.226.105.114:8000/login/") else {
+        guard let url = URL(string: "http://10.226.173.27:8000/login/") else {
             completion(false, "Invalid server URL.")
             return
         }

@@ -8,79 +8,135 @@
 import SwiftUI
 
 struct LoginView: View {
+    @Environment(\.dismiss) private var dismiss
+    
     @StateObject private var viewModel = LoginViewModel()
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isDashboardPresented = false
+    @State private var goToSignUp = false
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
-                Text("Login")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                Text("Sign in to Misty")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                TextField("Username", text: $viewModel.username)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-                
-                SecureField("Password", text: $viewModel.password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-                
-                Button(action: {
-                    viewModel.login { success, message in
-                        if success {
-                            isDashboardPresented = true
-                        } else {
-                            alertMessage = message
-                            showAlert = true
+            ZStack {
+                // Background Gradient
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.27, green: 0.51, blue: 0.79),
+                        Color(red: 0.42, green: 0.74, blue: 0.96)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                VStack(spacing: 20) {
+                    // Custom Back Button
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 17, weight: .medium))
+                                Text("Back")
+                            }
+                            .foregroundColor(.white)
                         }
+                        Spacer()
                     }
-                }) {
-                    Text("Log in")
-                        .foregroundColor(.white)
+                    .padding(.horizontal)
+                    .padding(.top, 10)
+
+                    // Title
+                    VStack(spacing: 8) {
+                        Text("Login")
+                            .font(.system(size: 70, weight: .bold))
+                            .foregroundColor(.white)
+                        
+                        Text("Sign in to Misty")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                    .padding(.top, 50)
+                    .padding(.bottom, 150)
+
+                    // Username
+                    TextField("Username", text: $viewModel.username)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
                         .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .cornerRadius(8)
-                }
-                .padding()
-                
-                HStack {
-                    Button("Forgot password?") {
-                        // Handle reset password action
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+
+                    // Password
+                    SecureField("Password", text: $viewModel.password)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                        .padding(.bottom, 30)
+
+                    // Login Button
+                    Button(action: {
+                        viewModel.login { success, message in
+                            if success {
+                                isDashboardPresented = true
+                            } else {
+                                alertMessage = message
+                                showAlert = true
+                            }
+                        }
+                    }) {
+                        Text("Log In")
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color(red: 0.07, green: 0.24, blue: 0.49))
+                            .cornerRadius(10)
                     }
+                    .padding(.horizontal)
+
+                    // Forgot password / Sign up
+                    HStack {
+                        Button("Forgot password?") {
+                            // TODO
+                        }
+                        .foregroundColor(.white.opacity(0.85))
+                        .font(.system(size: 15, weight: .medium))
+
+                        Spacer()
+
+                        Button("Sign up!") {
+                            goToSignUp = true
+                        }
+                        .foregroundColor(.white)
+                        .font(.system(size: 15, weight: .bold))
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+
                     Spacer()
-                    Button("Sign up!") {
-                        // Handle sign-up action
-                    }
                 }
-                .font(.footnote)
-                .padding(.top, 8)
-                
-                Spacer()
+                .alert(isPresented: $showAlert) {
+                    Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+                }
+
+                // Navigate to Home
+                NavigationLink(destination: HomeDashboardView(), isActive: $isDashboardPresented) {
+                    EmptyView()
+                }
+
+                // Navigate to Sign Up
+                NavigationLink(destination: RoleSelectionView(), isActive: $goToSignUp) {
+                    EmptyView()
+                }
             }
-            .padding()
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Error"),
-                      message: Text(alertMessage),
-                      dismissButton: .default(Text("OK")))
-            }
-            // This modifier is attached to the NavigationStack and handles navigation.
-            .navigationDestination(isPresented: $isDashboardPresented) {
-                HomeDashboardView()
-            }
+            .navigationBarBackButtonHidden(true) // Hides default back
         }
     }
 }
-
 
 #Preview {
     LoginView()
