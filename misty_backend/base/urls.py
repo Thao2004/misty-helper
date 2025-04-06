@@ -6,7 +6,7 @@ from base.views.account_views import (
     index,
     create_caregiver,
     create_patient,
-    CustomLoginView,
+    login_view,
     logout_view,
     healthinfo_view
 )
@@ -16,14 +16,24 @@ from base.views.checkup_views import (
     get_due_checkups,
     submit_checkup_response
 )
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 urlpatterns = [
     path('', index, name='index'),  # This is the index view for the base app
     path('register/caregiver/', create_caregiver, name='create_caregiver'),
     path('register/patient/', create_patient, name='create_patient'),
     
     # Authentication endpoints
-    path('login/', CustomLoginView.as_view(), name='login'),
+    path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
+
+     # JWT endpoints from SimpleJWT
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # login
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # refresh token
     
     # Health info endpoints for patients
     path('healthinfo/', healthinfo_view, name='healthinfo'),
