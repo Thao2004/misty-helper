@@ -1,5 +1,5 @@
 //
-//  HomeDashboardView.swift
+//  PatientDashboardView.swift
 //  MistyiOS
 //
 //  Created by Nguyen Hoang Mai Thao on 4/5/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HomeDashboardView: View {
+struct PatientDashboardView: View {
     @StateObject private var viewModel = HomeDashboardViewModel()
 
     var body: some View {
@@ -35,20 +35,20 @@ struct HomeDashboardView: View {
             // Health report & Connect to Misty full width buttons
             VStack(spacing: 16) {
                 VStack {
-                    DashboardButton(title: "Health report", imageName: "waveform.path.ecg")
+                    PatientDashboardButton(title: "Health report", imageName: "waveform.path.ecg")
                         .frame(maxWidth: .infinity)
                     
                     NavigationLink(destination: ConnectToMistyView()) {
-                        DashboardButton(title: "Connect to Misty", imageName: "hare")
+                        PatientDashboardButton(title: "Connect to Misty", imageName: "hare")
                             .frame(maxWidth: .infinity)
                     }
                 }
 
                 // Actions - Set medication & To do list horizontally aligned
                 HStack(spacing: 16) {
-                    DashboardButton(title: "Set medication", imageName: "pills")
+                    PatientDashboardButton(title: "Set medication", imageName: "pills")
                     NavigationLink(destination: ReminderView()) {
-                        DashboardButton(title: "Reminder List", imageName: "checklist")
+                        PatientDashboardButton(title: "Reminder List", imageName: "checklist")
                             .frame(maxWidth: .infinity)
                     }
                 }
@@ -96,7 +96,7 @@ struct HomeDashboardView: View {
     }
 }
 
-struct DashboardButton: View {
+struct PatientDashboardButton: View {
     let title: String
     let imageName: String
     
@@ -124,5 +124,5 @@ struct DashboardButton: View {
 
 
 #Preview {
-    HomeDashboardView()
+    PatientDashboardView()
 }

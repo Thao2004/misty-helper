@@ -12,7 +12,8 @@ struct MistyiOSApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                SplashScreenView()
+                //SplashScreenView()
+                CaregiverDashboardView()
             }
         }
     }
