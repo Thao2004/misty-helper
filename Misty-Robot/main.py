@@ -35,7 +35,7 @@ interrupt = False
 
 
 # OLLAMA
-system =""
+system = "you are a friendly and helpful assistant " 
 
 emotion = {
     "s": "sad",
@@ -251,7 +251,11 @@ if __name__ == "__main__":
         misty.start_face_detection()
         if misty.get_known_faces() is not None:
             face_detected()
-    print("Face detected")
+            print("Face detected")
+            break
+        else:
+            print("Looking for face...")
+            continue
     misty.display_image("e_Joy.jpg")
     misty.register_event(event_name="arbitrary-name",
                      event_type=Events.DialogAction,
