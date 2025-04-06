@@ -38,7 +38,6 @@ class HealthInfo(models.Model):
         return f"Health info for {self.patient.user.get_full_name()}"
     
 
-
 class Checkup(models.Model):
     caregiver = models.ForeignKey(Caregiver, on_delete=models.CASCADE, related_name="checkups")
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="checkups")

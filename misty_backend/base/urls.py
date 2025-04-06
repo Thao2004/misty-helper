@@ -43,19 +43,19 @@ urlpatterns = [
 
     #Info
     # Patients
-    path('patients/<int:caregiver_id>/', get_patient_info),
-    path('patients/<int:patient_id>/healthinfo/', get_health_info, name='get_health_info'),
-    path('patients/<int:patient_id>/healthinfo/update/', update_health_info_with_user, name='update_health_info_with_user'),
-    path('patients/<int:patient_id>/with-health/', get_patient_with_healthinfo),
+    path('patients/<int:user_id>/', get_patient_info),
+    path('patients/<int:user_id>/healthinfo/', get_health_info, name='get_health_info'),
+    path('patients/<int:user_id>/healthinfo/update/', update_health_info_with_user, name='update_health_info_with_user'),
+    path('patients/<int:user_id>/with-health/', get_patient_with_healthinfo),
 
     #Caregiver
-    path('caregivers/<int:caregiver_id>/', get_caregiver_info),
-    path('caregivers/<int:caregiver_id>/patients/', get_my_patients),
+    path('caregivers/<int:user_id>/', get_caregiver_info),
+    path('caregivers/<int:user_id>/patients/', get_my_patients),
 
     #Checkups
-    path('patients/<int:patient_id>/checkups/', get_checkup_history, name='get_checkup_history'),
+    path('patients/<int:user_id>/checkups/', get_checkup_history, name='get_checkup_history'),
     path('checkup/', create_checkup, name='create_checkup'),             # POST
     path('checkup/select-time/', select_checkup_time, name='select_checkup_time'),  # POST
-    path('checkup/due/', get_due_checkups, name='get_due_checkups'),        # GET
+    path('checkup/due/<int:user_id>/', get_due_checkups, name='get_due_checkups'),        # GET
     path('checkup/response/', submit_checkup_response, name='submit_checkup_response'),  # POST
 ]
