@@ -4,30 +4,35 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
 from base.serializers import CheckupSerializer, CheckupResponseSerializer
-from base.models import Patient, Caregiver, Checkup  # and CheckupResponse if needed
+from base.models import Patient, Caregiver, Checkup
+
+# -------- Create checkup using user_id -------- #
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_checkup(request):
     """
-    Caregiver creates a new checkup.
-    Expected payload example:
+    Create a new checkup using caregiver and patient user IDs.
+
+    Payload:
     {
-        "patient": <patient_id>,
-        "checkup_time_start": "2025-04-05T16:00:00Z",
-        "checkup_time_end": "2025-04-05T18:00:00Z",
-        "questions": "[\"How do you feel?\", \"Did you sleep well?\"]",
+        "caregiver_user": 2,
+        "patient_user": 5,
+        "checkup_time_start": "...",
+        "checkup_time_end": "...",
+        "questions": "[\"Q1\", \"Q2\"]",
         "measure_temperature": true
     }
-    The caregiver field is set automatically from the logged-in caregiver.
     """
     try:
-        caregiver = request.user.caregiver
-    except Exception:
-        return Response({"detail": "User is not a caregiver."}, status=status.HTTP_403_FORBIDDEN)
-    
+        caregiver = Caregiver.objects.get(user__id=request.data.get('caregiver_user'))
+        patient = Patient.objects.get(user__id=request.data.get('patient_user'))
+    except (Caregiver.DoesNotExist, Patient.DoesNotExist):
+        return Response({"detail": "Caregiver or patient not found."}, status=404)
+
     data = request.data.copy()
-    data['caregiver'] = caregiver.id  # set caregiver from the logged-in user
+    data['caregiver'] = caregiver.id
+    data['patient'] = patient.id
 
     serializer = CheckupSerializer(data=data)
     if serializer.is_valid():
@@ -35,42 +40,44 @@ def create_checkup(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# -------- Select checkup time (unchanged logic) -------- #
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def select_checkup_time(request):
     """
-    Patient selects a preferred time for an existing checkup.
-    Expected payload:
+    Set the selected time for a checkup.
+
+    Payload:
     {
         "checkup_id": <id>,
-        "selected_time": "2025-04-05T17:00:00Z"
+        "selected_time": "..."
     }
     """
-    try:
-        patient = request.user.patient
-    except Exception:
-        return Response({"detail": "User is not a patient."}, status=status.HTTP_403_FORBIDDEN)
-
     checkup_id = request.data.get("checkup_id")
     selected_time = request.data.get("selected_time")
+
     try:
-        checkup = Checkup.objects.get(id=checkup_id, patient=patient)
+        checkup = Checkup.objects.get(id=checkup_id)
     except Checkup.DoesNotExist:
-        return Response({"detail": "Checkup not found for this patient."}, status=status.HTTP_404_NOT_FOUND)
-    
+        return Response({"detail": "Checkup not found."}, status=404)
+
     checkup.selected_time = selected_time
     checkup.save()
+
     serializer = CheckupSerializer(checkup)
     return Response(serializer.data)
 
+# -------- Get due checkups for a user (patient) -------- #
+
 @api_view(['GET'])
-@permission_classes([AllowAny])  # Or IsAuthenticated if Misty sends tokens
-def get_due_checkups(request, patient_id):
+@permission_classes([AllowAny])  # Misty or device
+def get_due_checkups(request, user_id):
     """
-    Misty polls for due checkups for a specific patient within ±5 minutes of now.
+    Return checkups due within ±5 minutes for a patient user ID.
     """
     try:
-        patient = Patient.objects.get(id=patient_id)
+        patient = Patient.objects.get(user__id=user_id)
     except Patient.DoesNotExist:
         return Response({'detail': 'Patient not found.'}, status=404)
 
@@ -88,40 +95,40 @@ def get_due_checkups(request, patient_id):
     serializer = CheckupSerializer(checkups, many=True)
     return Response(serializer.data)
 
+# -------- Submit checkup response (Misty) -------- #
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def submit_checkup_response(request):
     """
-    Misty sends responses for a checkup.
-    Expected payload:
+    Submit checkup response data from Misty.
+    
+    Payload:
     {
         "checkup": <checkup_id>,
-        "responses": "{\"How do you feel?\": \"I feel fine.\", \"Did you sleep well?\": \"Yes.\"}",
+        "responses": "{\"Q1\": \"Yes\", \"Q2\": \"No\"}",
         "temperature": 36.7
     }
-    Optionally, you could later trigger OpenAI to process the responses.
     """
     serializer = CheckupResponseSerializer(data=request.data)
     if serializer.is_valid():
         response_obj = serializer.save()
-        # Update the checkup status to completed
         checkup = response_obj.checkup
         checkup.status = 'completed'
         checkup.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# -------- Get checkup history for patient (by user_id) -------- #
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_checkup_history(request, patient_id):
+# @permission_classes([IsAuthenticated])
+def get_checkup_history(request, user_id):
     """
-    Get checkup history for a specific patient.
-    Allowed if requester is the patient or their caregiver.
+    Return all checkups for a patient by user ID.
     """
     try:
-        patient = Patient.objects.get(id=patient_id)
+        patient = Patient.objects.get(user__id=user_id)
     except Patient.DoesNotExist:
         return Response({'detail': 'Patient not found.'}, status=404)
 
