@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-r6su&x8dt2u+$itch)qal9#@%v*=@ya=#q1$4lfnnrn#=0_c^n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] #10.226.105.114
 
 
 # Application definition
@@ -50,7 +50,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 ROOT_URLCONF = 'misty_backend.urls'
 
 TEMPLATES = [
