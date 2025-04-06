@@ -11,63 +11,94 @@ class UserSerializer(serializers.ModelSerializer):
 # Serializer for Caregiver
 class CaregiverSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
+    password = serializers.CharField(write_only=True, source='user.password')
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
+    email = serializers.EmailField(source='user.email', required=False)
 
     class Meta:
         model = Caregiver
-        fields = ['id', 'username', 'first_name', 'last_name', 'role', 'hospital', 'date_of_birth']
+        fields = [
+            'id',
+            'username',
+            'password',
+            'first_name',
+            'last_name',
+            'email',
+            'role',
+            'hospital',
+            'date_of_birth'
+        ]
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
-        user = User.objects.create(**user_data)
+        password = user_data.pop('password')
+        user = User(**user_data)
+        user.set_password(password)
+        user.save()
         caregiver = Caregiver.objects.create(user=user, **validated_data)
         return caregiver
 
     def update(self, instance, validated_data):
-        user_data = validated_data.pop('user', None)
-        if user_data:
-            instance.user.username = user_data.get('username', instance.user.username)
-            instance.user.first_name = user_data.get('first_name', instance.user.first_name)
-            instance.user.last_name = user_data.get('last_name', instance.user.last_name)
-            instance.user.save()
-        
-        instance.hospital = validated_data.get('hospital', instance.hospital)
-        instance.date_of_birth = validated_data.get('date_of_birth', instance.date_of_birth)
-        instance.role = validated_data.get('role', instance.role)
+        user_data = validated_data.pop('user', {})
+        user = instance.user
+
+        for attr, value in user_data.items():
+            if attr == 'password':
+                user.set_password(value)
+            else:
+                setattr(user, attr, value)
+        user.save()
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
         return instance
-
+    
 # Serializer for Patient
 class PatientSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
+    password = serializers.CharField(write_only=True, source='user.password')
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
+    email = serializers.EmailField(source='user.email', required=False)
 
     class Meta:
         model = Patient
-        fields = ['id', 'username', 'first_name', 'last_name', 'caregiver', 'address', 'date_of_birth']
+        fields = [
+            'id',
+            'username',
+            'password',
+            'first_name',
+            'last_name',
+            'email',
+            'caregiver',
+            'address',
+            'date_of_birth'
+        ]
 
     def create(self, validated_data):
-        # Extract user fields from the validated data
         user_data = validated_data.pop('user')
-        user = User.objects.create(**user_data)
+        password = user_data.pop('password')
+        user = User(**user_data)
+        user.set_password(password)
+        user.save()
         patient = Patient.objects.create(user=user, **validated_data)
         return patient
 
     def update(self, instance, validated_data):
-        # Update related user fields if present
-        user_data = validated_data.pop('user', None)
-        if user_data:
-            instance.user.username = user_data.get('username', instance.user.username)
-            instance.user.first_name = user_data.get('first_name', instance.user.first_name)
-            instance.user.last_name = user_data.get('last_name', instance.user.last_name)
-            instance.user.save()
+        user_data = validated_data.pop('user', {})
+        user = instance.user
 
-        # Update Patient-specific fields
-        instance.address = validated_data.get('address', instance.address)
-        instance.date_of_birth = validated_data.get('date_of_birth', instance.date_of_birth)
-        # If you need to update caregiver, handle it similarly.
+        for attr, value in user_data.items():
+            if attr == 'password':
+                user.set_password(value)
+            else:
+                setattr(user, attr, value)
+        user.save()
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
         return instance
     

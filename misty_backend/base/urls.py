@@ -6,7 +6,7 @@ from base.views.account_views import (
     index,
     create_caregiver,
     create_patient,
-    CustomLoginView,
+    login_view,
     logout_view,
     healthinfo_view
 )
@@ -22,7 +22,7 @@ urlpatterns = [
     path('register/patient/', create_patient, name='create_patient'),
     
     # Authentication endpoints
-    path('login/', CustomLoginView.as_view(), name='login'),
+    path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     
     # Health info endpoints for patients

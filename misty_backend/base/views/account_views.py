@@ -1,11 +1,14 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+
+
 
 from base.models import Caregiver, Patient, HealthInfo
 from base.serializers import CaregiverSerializer, PatientSerializer, HealthInfoSerializer
@@ -60,34 +63,66 @@ def create_patient(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomLoginView(ObtainAuthToken):
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request): 
     """
-    Custom login view that returns a token.
+    Login a user and return their details.  
+    Expected payload example:
+    {
+    "username": "montim",
+    "password": "secret123"
+    }
     """
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-        })
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    
+
+    print(f"Login attempt with username: \"{username}\" and password: \"{password}\"")
+
+    user = authenticate(request, username=username, password=password)
+    u = User.objects.get(username=username) if username else None  # Get the user object if authentication was successful
+    print(f"User object: {u}")  # Debugging line to check the user object
+    print(u.check_password(password))  # Debugging line to check the password hash
+
+    if user is not None:
+        login(request, user)
+
+        # Check if user is a caregiver or patient
+        try:
+            caregiver = Caregiver.objects.get(user=user)
+            role = 'Caregiver'
+        except Caregiver.DoesNotExist:
+            caregiver = None
+            try:
+                patient = Patient.objects.get(user=user)
+                role = 'Patient'
+            except Patient.DoesNotExist:
+                role = 'Unknown'
+
+        print(f"User role: {role}")  # Debugging line to check the user role
+
+        data = {
+            'user_id': user.id,
+            'username': user.username,
+            'role': role
+        }
+        return Response(
+            data=data, 
+            status=status.HTTP_200_OK
+        )
+
+    else:
+        return JsonResponse({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
-    """
-    Log out the current user by deleting their auth token.
-    """
-    try:
-        token = Token.objects.get(user=request.user)
-        token.delete()
-        return Response({"detail": "Logged out successfully."}, status=status.HTTP_200_OK)
-    except Token.DoesNotExist:
-        return Response({"detail": "Token not found."}, status=status.HTTP_400_BAD_REQUEST)
-
+    logout(request)
+    return JsonResponse({'message': 'Logout successful'})
 
 @api_view(['POST', 'PUT'])
 @permission_classes([IsAuthenticated])
