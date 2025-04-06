@@ -64,22 +64,30 @@ def select_checkup_time(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
-def get_due_checkups(request):
+@permission_classes([AllowAny])  # Or IsAuthenticated if Misty sends tokens
+def get_due_checkups(request, patient_id):
     """
-    Misty polls to get checkups that are due to be performed.
-    This endpoint returns checkups that have a selected_time in the past few minutes.
+    Misty polls for due checkups for a specific patient within ±5 minutes of now.
     """
+    try:
+        patient = Patient.objects.get(id=patient_id)
+    except Patient.DoesNotExist:
+        return Response({'detail': 'Patient not found.'}, status=404)
+
     now = timezone.now()
     window_start = now - timezone.timedelta(minutes=5)
     window_end = now + timezone.timedelta(minutes=5)
+
     checkups = Checkup.objects.filter(
+        patient=patient,
         selected_time__gte=window_start,
         selected_time__lte=window_end,
         status='scheduled'
     )
+
     serializer = CheckupSerializer(checkups, many=True)
     return Response(serializer.data)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -103,3 +111,20 @@ def submit_checkup_response(request):
         checkup.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_checkup_history(request, patient_id):
+    """
+    Get checkup history for a specific patient.
+    Allowed if requester is the patient or their caregiver.
+    """
+    try:
+        patient = Patient.objects.get(id=patient_id)
+    except Patient.DoesNotExist:
+        return Response({'detail': 'Patient not found.'}, status=404)
+
+    checkups = Checkup.objects.filter(patient=patient).order_by('-created_at')
+    serializer = CheckupSerializer(checkups, many=True)
+    return Response(serializer.data)
