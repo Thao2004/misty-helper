@@ -19,6 +19,7 @@ struct PatientSignUpView: View {
     @State private var address = ""
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var goToLogin = false
 
     var formattedBirthDate: String {
         let formatter = DateFormatter()
@@ -27,48 +28,100 @@ struct PatientSignUpView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Patient Sign Up")
-                .font(.title)
-                .fontWeight(.bold)
-                .padding(.top)
+        NavigationStack {
+            ZStack {
+                // Background Gradient + subtle center glow
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.27, green: 0.51, blue: 0.79),
+                        Color(red: 0.42, green: 0.74, blue: 0.96)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                RadialGradient(
+                    gradient: Gradient(colors: [Color.white.opacity(0.15), .clear]),
+                    center: .center,
+                    startRadius: 10,
+                    endRadius: 350
+                )
+                .ignoresSafeArea()
 
-            Group {
-                TextField("First Name", text: $firstName)
-                TextField("Last Name", text: $lastName)
-                DatePicker("Date of Birth", selection: $birthDate, displayedComponents: .date)
-                TextField("Address", text: $address)
-                TextField("Email", text: $email)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                TextField("Username", text: $username)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                SecureField("Password", text: $password)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
+                VStack(spacing: 25) {
+                    // Custom Back Button
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 17, weight: .medium))
+                                Text("Back")
+                            }
+                            .foregroundColor(.white)
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 10)
+
+                    Text("Patient Sign Up")
+                        .font(.system(size: 35, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.bottom, 10)
+
+                    Group {
+                        Group {
+                            TextField("First Name", text: $firstName)
+                            TextField("Last Name", text: $lastName)
+                            DatePicker("Date of Birth", selection: $birthDate, displayedComponents: .date)
+                                .foregroundColor(.black)
+                            TextField("Address", text: $address)
+                            TextField("Email", text: $email)
+                                .autocapitalization(.none)
+                                .disableAutocorrection(true)
+                            TextField("Username", text: $username)
+                                .autocapitalization(.none)
+                                .disableAutocorrection(true)
+                            SecureField("Password", text: $password)
+                                .autocapitalization(.none)
+                                .disableAutocorrection(true)
+                        }
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .padding(.horizontal, 16)
+                    }
+
+                    Button(action: {
+                        signUp()
+                    }) {
+                        Text("Sign Up")
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color(red: 0.07, green: 0.24, blue: 0.49))
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal, 16)
+
+                    Spacer()
+
+                    // Hidden navigation to login
+                    NavigationLink(destination: LoginView(), isActive: $goToLogin) {
+                        EmptyView()
+                    }
+                }
             }
-            .autocapitalization(.words)
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.horizontal)
-
-            Button("Sign Up") {
-                signUp()
+            .alert("Info", isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(alertMessage)
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color.orange)
-            .foregroundColor(.white)
-            .cornerRadius(8)
-            .padding(.horizontal)
-
-            Spacer()
         }
-        .alert("Info", isPresented: $showAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(alertMessage)
-        }
+        .navigationBarBackButtonHidden(true)
     }
 
     private func signUp() {
@@ -88,7 +141,7 @@ struct PatientSignUpView: View {
             "date_of_birth": formattedBirthDate
         ]
 
-        guard let url = URL(string: "http://10.226.105.114:8000/register/patient/") else {
+        guard let url = URL(string: "http://10.226.173.27:8000/register/patient/") else {
             alertMessage = "Invalid URL."
             showAlert = true
             return
@@ -119,9 +172,9 @@ struct PatientSignUpView: View {
                         alertMessage = "Patient registered successfully!"
                         showAlert = true
 
-                        // Navigate back to LoginView after short delay
+                        // Navigate to LoginView
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            dismiss()
+                            goToLogin = true
                         }
                     } else {
                         if let data = data,
@@ -137,4 +190,5 @@ struct PatientSignUpView: View {
         }.resume()
     }
 }
+
 
