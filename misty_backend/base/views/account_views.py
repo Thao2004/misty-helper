@@ -12,25 +12,17 @@ from rest_framework.authtoken.views import ObtainAuthToken
 
 from base.models import Caregiver, Patient, HealthInfo
 from base.serializers import CaregiverSerializer, PatientSerializer, HealthInfoSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 def index(request):
     return HttpResponse("Hello, world. You're at the base index.")
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_caregiver(request):
     """
     Create a new caregiver account.
-    Expected payload example:
-    {
-      "username": "caregiver1",
-      "first_name": "Alice",
-      "last_name": "Smith",
-      "email": "alice@example.com",
-      "password": "secret123",
-      "hospital": "General Hospital",
-      "date_of_birth": "1970-01-01"
-    }
     """
     serializer = CaregiverSerializer(data=request.data)
     if serializer.is_valid():
@@ -44,17 +36,6 @@ def create_caregiver(request):
 def create_patient(request):
     """
     Create a new patient account.
-    Expected payload example:
-    {
-      "username": "patient1",
-      "first_name": "Bob",
-      "last_name": "Jones",
-      "email": "bob@example.com",
-      "password": "secret123",
-      "address": "123 Main St",
-      "date_of_birth": "1980-05-15",
-      "caregiver": <caregiver_id>   // optional if linking via PK or you can handle assignment separately
-    }
     """
     serializer = PatientSerializer(data=request.data)
     if serializer.is_valid():
@@ -63,66 +44,49 @@ def create_patient(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request): 
     """
-    Login a user and return their details.  
-    Expected payload example:
-    {
-    "username": "montim",
-    "password": "secret123"
-    }
+    Login a user and return JWT tokens and role info.
     """
     username = request.data.get('username')
     password = request.data.get('password')
 
-    
-
-    print(f"Login attempt with username: \"{username}\" and password: \"{password}\"")
-
     user = authenticate(request, username=username, password=password)
-    u = User.objects.get(username=username) if username else None  # Get the user object if authentication was successful
-    print(f"User object: {u}")  # Debugging line to check the user object
-    print(u.check_password(password))  # Debugging line to check the password hash
 
     if user is not None:
-        login(request, user)
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
 
-        # Check if user is a caregiver or patient
-        try:
-            caregiver = Caregiver.objects.get(user=user)
+        # Determine role
+        role = 'Unknown'
+        if Caregiver.objects.filter(user=user).exists():
             role = 'Caregiver'
-        except Caregiver.DoesNotExist:
-            caregiver = None
-            try:
-                patient = Patient.objects.get(user=user)
-                role = 'Patient'
-            except Patient.DoesNotExist:
-                role = 'Unknown'
-
-        print(f"User role: {role}")  # Debugging line to check the user role
+        elif Patient.objects.filter(user=user).exists():
+            role = 'Patient'
 
         data = {
             'user_id': user.id,
             'username': user.username,
-            'role': role
+            'role': role,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
         }
-        return Response(
-            data=data, 
-            status=status.HTTP_200_OK
-        )
-
-    else:
-        return JsonResponse({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(data, status=status.HTTP_200_OK)
+    
+    return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
-    logout(request)
-    return JsonResponse({'message': 'Logout successful'})
+    """
+    JWT logout - handled client-side by deleting token.
+    Optionally blacklist refresh token if using token blacklist.
+    """
+    return Response({'message': 'Logout successful. Please delete token client-side.'})
+
 
 @api_view(['POST', 'PUT'])
 @permission_classes([IsAuthenticated])
