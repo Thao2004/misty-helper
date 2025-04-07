@@ -68,7 +68,7 @@ struct PatientDetailView: View {
                         PatientDetailButton(title: "Checkup History", systemImage: "clock.arrow.circlepath")
                     }
                     
-                    NavigationLink(destination: Text("Medication List for \(patient.fullName)")) {
+                    NavigationLink(destination: MedicationListView(patientName: patient.fullName, patientId: patient.id)) {
                         PatientDetailButton(title: "Medication List", systemImage: "pills.fill")
                     }
                     

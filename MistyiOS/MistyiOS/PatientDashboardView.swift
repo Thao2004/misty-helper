@@ -65,20 +65,25 @@ struct PatientDashboardView: View {
                         NavigationLink(destination: CheckupHistoryView(patientName: viewModel.fullName, patientId: userId)) {
                             PatientDashboardButton(title: "Checkup History", imageName: "waveform.path.ecg")
                         }
-
+                        
                         NavigationLink(destination: ConnectToMistyView()) {
                             PatientDashboardButton(title: "Connect to Misty", imageName: "hare")
                         }
-                    }
-
-                    HStack(spacing: 16) {
-                        PatientDashboardButton(title: "Medication List", imageName: "pills")
-
+        
+                        
+                        if let userId = viewModel.userId {
+                            NavigationLink(destination: MedicationListView(patientName: viewModel.fullName, patientId: userId)) {
+                                PatientDashboardButton(title: "Medication List", imageName: "pills.fill")
+                            }
+                        }
+                        
+                        
                         NavigationLink(destination: ScheduledCheckupListView(patientId: userId)) {
                             PatientDashboardButton(title: "Upcoming Scheduled Checkups", imageName: "calendar.badge.clock")
-
+                            
                         }
                     }
+                
                 }
                 .padding(.horizontal)
 

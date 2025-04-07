@@ -21,7 +21,7 @@ class PatientListViewModel: ObservableObject {
     @Published var patients: [Patient] = []
 
     func fetchPatients(for caregiverId: Int) {
-        guard let url = URL(string: "http://10.226.162.163:8000/caregivers/\(caregiverId)/patients/") else {
+        guard let url = URL(string: "http://10.226.17.124:8000/caregivers/\(caregiverId)/patients/") else {
             print("Invalid URL for caregiver ID \(caregiverId)")
             return
         }

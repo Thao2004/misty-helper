@@ -158,7 +158,7 @@ struct NewCheckupView: View {
             "status": status
         ]
         
-        guard let url = URL(string: "http://10.226.162.163:8000/checkup/"),
+        guard let url = URL(string: "http://10.226.17.124:8000/checkup/"),
               let body = try? JSONSerialization.data(withJSONObject: payload) else {
             alertMessage = "Invalid URL or request body"
             showAlert = true

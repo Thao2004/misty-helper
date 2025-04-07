@@ -92,7 +92,7 @@ struct HealthInfoView: View {
     }
 
     private func fetchHealthInfo() {
-        guard let url = URL(string: "http://10.226.162.163:8000/patients/\(patientId)/healthinfo/") else {
+        guard let url = URL(string: "http://10.226.17.124:8000/patients/\(patientId)/healthinfo/") else {
             print("Invalid URL")
             isLoading = false
             return

@@ -27,7 +27,7 @@ class ScheduledCheckupViewModel: ObservableObject {
     @Published var scheduledCheckups: [ScheduledCheckup] = []
 
     func fetchScheduledCheckups(for patientId: Int) {
-        guard let url = URL(string: "http://10.226.162.163:8000/patients/\(patientId)/checkups/") else {
+        guard let url = URL(string: "http://10.226.17.124:8000/patients/\(patientId)/checkups/") else {
             print("Invalid URL")
             return
         }
