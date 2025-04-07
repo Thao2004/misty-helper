@@ -30,7 +30,7 @@ class CaregiverViewModel: ObservableObject {
     }
 
     func fetchCaregiverInfo(userId: Int) {
-        guard let url = URL(string: "http://10.226.162.163:8000/caregivers/\(userId)/") else {
+        guard let url = URL(string: "http://10.226.17.124:8000/caregivers/\(userId)/") else {
             print("Invalid URL")
             return
         }

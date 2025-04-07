@@ -12,6 +12,7 @@ class PatientDashboardViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var address: String = ""
     @Published var dateOfBirth: String = ""
+    @Published var userId: Int?
 
     var formattedDOB: String {
         let inputFormatter = DateFormatter()
@@ -26,7 +27,8 @@ class PatientDashboardViewModel: ObservableObject {
     }
 
     func fetchPatientInfo(userId: Int) {
-        guard let url = URL(string: "http://10.226.162.163:8000/patients/\(userId)/") else {
+        self.userId = userId
+        guard let url = URL(string: "http://10.226.17.124:8000/patients/\(userId)/") else {
             print("Invalid URL")
             return
         }

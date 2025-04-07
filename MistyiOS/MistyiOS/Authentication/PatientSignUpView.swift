@@ -141,7 +141,7 @@ struct PatientSignUpView: View {
             "date_of_birth": formattedBirthDate
         ]
 
-        guard let url = URL(string: "http://10.226.162.163:8000/register/patient/") else {
+        guard let url = URL(string: "http://10.226.17.124:8000/register/patient/") else {
             alertMessage = "Invalid URL."
             showAlert = true
             return
