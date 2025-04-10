@@ -91,8 +91,3 @@ python manage.py runserver
 - **Django**
 - **Misty SDK**
 - **Swift**
-
----
-
-## Try It Out
-[GitHub Repo](#) (Add your repository link here)
