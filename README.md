@@ -130,7 +130,9 @@ This makes the project accessible and testable for recruiters, developers, and c
 ---
 
 ## How We Built It
-- **Frontend**: Swift iOS app for caregivers to manage plans and checkups and patients to view their info and see their checkups.
+- **Frontend**: A Swift-based iOS app that provides two distinct portals:
+  - **Caregiver Portal**: Allows caregivers to create and manage patient profiles, schedule medication plans, assign voice-based checkup questions, and monitor patient history and adherence.
+  - **Patient Portal**: Enables patients to connect to Misty, view their personalized medication lists, track upcoming checkups, and review completed health assessments. The interface is designed to be simple and accessible, especially for elderly users.
 - **Backend**: Django with RESTful APIs for patient/caregiver management and Misty integration.
 - **Misty SDK**: Custom functions for talking, displaying emotions, responding to commands, and capturing images.
 - **Roboflow**: Trained a model to detect 5 medication types using COCO-format data and integrated it with Misty’s photo-check feature.
